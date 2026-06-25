@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Week · IMNU Term IV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#cfe8f0; --dot:#5a9bb2; --surface:#ffffff; --input:#f3fafc;
+  --ink:#16323a; --muted:#50686f; --faint:#7e9aa2; --line:#bcdbe5;
+  --accent:#9a2a3a; --accent-soft:#f1dee1; --shadow:rgba(20,48,58,.14);
+  --fin:#3b5bdb; --fin-bg:#e8ecfd;
+  --mkt:#d9480f; --mkt-bg:#fbe7d8;
+  --dna:#0c8c6a; --dna-bg:#d7f1e8;
+  --ob:#6741d9;  --ob-bg:#eae4fb;
+  --om:#b8730a;  --om-bg:#fbecd2;
+  --es:#b02458;  --es-bg:#fbe0ea;
+  --gen:#5b6776; --gen-bg:#e9ecf0;
+  --hol:#9a6b1f; --hol-bg:#f6e8cf;
+  --exam:#b02458; --exam-bg:#fbe0ea;
+  --radius:14px;
+}
+html[data-theme="dark"]{
+  --bg:#13171c; --dot:#222a33; --surface:#1b2027; --input:#161b22;
+  --ink:#e9eef3; --muted:#9aa6b2; --faint:#6c7681; --line:#2a313a;
+  --accent:#e26b80; --accent-soft:#34232a; --shadow:rgba(0,0,0,.45);
+  --fin:#7aa2ff; --fin-bg:#1c2740;
+  --mkt:#ff9d5c; --mkt-bg:#36230f;
+  --dna:#3fd6a8; --dna-bg:#10302a;
+  --ob:#ab8cff;  --ob-bg:#241d3e;
+  --om:#e3b15c;  --om-bg:#342916;
+  --es:#ff7da6;  --es-bg:#371b27;
+  --gen:#9aa6b2; --gen-bg:#242a31;
+  --hol:#e3b15c; --hol-bg:#342916;
+  --exam:#ff7da6; --exam-bg:#371b27;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:"Inter",system-ui,sans-serif; color:var(--ink); background:var(--bg);
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+  background-image:radial-gradient(circle at 1px 1px,var(--dot) 1px,transparent 0);
+  background-size:22px 22px; transition:background-color .25s,color .25s;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;
+  padding-bottom:18px;border-bottom:1.5px solid var(--line);margin-bottom:34px;flex-wrap:wrap}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 6px}
+h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:30px;letter-spacing:-.02em;margin:0;line-height:1.05}
+.hd-right{display:flex;align-items:center;gap:14px}
+.week{text-align:right;font-size:12px;color:var(--muted)}
+.week b{display:block;color:var(--ink);font-size:13px}
+.toggle{width:40px;height:40px;flex:none;display:grid;place-items:center;cursor:pointer;
+  border:1.5px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);
+  transition:border-color .15s,background .15s,transform .08s}
+.toggle:hover{border-color:var(--accent)}
+.toggle:active{transform:translateY(1px)}
+.toggle svg{width:19px;height:19px;display:block}
+
+.lookup{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:26px;
+  transition:background-color .25s,border-color .25s}
+.lookup h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:19px;margin:0 0 4px}
+.lookup p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.field{display:flex;gap:10px;flex-wrap:wrap}
+input[type=text]{flex:1;min-width:200px;font-family:"JetBrains Mono",monospace;font-size:18px;
+  letter-spacing:.06em;text-transform:uppercase;padding:14px 16px;border:1.5px solid var(--line);
+  border-radius:11px;background:var(--input);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+input[type=text]::placeholder{color:var(--faint);letter-spacing:.04em}
+button.go{font-family:"Inter";font-weight:600;font-size:15px;color:#fff;background:var(--accent);
+  border:none;border-radius:11px;padding:0 24px;cursor:pointer;transition:transform .08s,filter .15s}
+button.go:hover{filter:brightness(.92)}
+button.go:active{transform:translateY(1px)}
+.err{margin-top:14px;font-size:14px;color:var(--accent);display:none}
+.err.show{display:block}
+
+#result{margin-top:34px;display:none}
+#result.show{display:block;animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.who{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.who .name{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:26px;letter-spacing:-.02em}
+.chip{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;padding:4px 9px;border-radius:7px;
+  background:var(--accent-soft);color:var(--accent);letter-spacing:.04em}
+.who .meta{color:var(--muted);font-size:14px}
+
+.section-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:30px 0 12px}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 14px;font-size:12.5px;color:var(--muted)}
+.legend .li{display:flex;align-items:center;gap:7px}
+.sw{width:15px;height:15px;border-radius:4px;flex:none}
+.sw.cls{background:color-mix(in srgb,var(--ink) 8%,transparent);border:1.5px solid color-mix(in srgb,var(--ink) 32%,transparent)}
+.sw.today{background:var(--accent-soft);border:2px solid var(--accent)}
+.sw.hol{background:var(--hol-bg);border:1.5px solid var(--hol)}
+.sw.exam{background:var(--exam-bg);border:1.5px solid var(--exam)}
+
+.events{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 18px}
+.evp{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;padding:7px 12px;border-radius:10px;border:1.5px solid}
+.evp .d{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:11.5px}
+.evp.hol{background:var(--hol-bg);color:var(--hol);border-color:color-mix(in srgb,var(--hol) 35%,transparent)}
+.evp.exam{background:var(--exam-bg);color:var(--exam);border-color:color-mix(in srgb,var(--exam) 35%,transparent)}
+.evp.none{background:transparent;color:var(--faint);border:1.5px dashed var(--line);font-style:italic}
+
+.tg{display:inline-block;margin-left:7px;font-size:8.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 6px;border-radius:5px;background:var(--accent);color:#fff;vertical-align:middle}
+
+.grid-wrap{overflow-x:auto}
+.grid{display:grid;gap:6px;min-width:560px}
+.gh{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 4px 8px;text-align:center}
+.gh.today{color:var(--accent)}
+.gh.hol{color:var(--hol)}
+.gt{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--faint);text-align:right;padding:10px 10px 0 0;white-space:nowrap;line-height:1.35}
+.cell{min-height:46px;border-radius:10px;border:1.5px dashed transparent}
+.cell.empty{border-color:var(--line)}
+.cell.todaycol{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.cell.clash{outline:2px solid var(--accent);outline-offset:1px;border-radius:11px}
+.blk{display:block;text-decoration:none;border-radius:10px;padding:8px 9px;border:1px solid transparent;transition:transform .1s,box-shadow .1s;
+  background:var(--cb);color:var(--c);border-color:color-mix(in srgb,var(--c) 26%,transparent)}
+.blk+.blk{margin-top:5px}
+.blk:hover{transform:translateY(-1px);box-shadow:0 4px 14px var(--shadow)}
+.blk .ab{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;line-height:1}
+.blk .rm{font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;margin-top:5px;opacity:.85}
+.blk .rm small{font-weight:500;opacity:.8}
+.ev-holiday{--c:var(--hol);--cb:var(--hol-bg)}
+.ev-exam{--c:var(--exam);--cb:var(--exam-bg)}
+
+.agenda{display:none}
+.day-grp{margin-bottom:18px}
+.day-grp h3{font-family:"Bricolage Grotesque",sans-serif;font-size:15px;margin:0 0 8px;padding-bottom:6px;border-bottom:1.5px solid var(--line)}
+.day-grp.today h3{color:var(--accent)}
+.arow{display:flex;gap:12px;align-items:flex-start;padding:9px 0}
+.arow .t{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);width:64px;flex:none;padding-top:9px;line-height:1.3}
+.arow .blk{flex:1}
+.arow .blk .nm{font-size:12.5px;font-weight:500;color:inherit;opacity:.95;margin-top:3px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:var(--radius);padding:16px;border-left-width:4px;
+  transition:background-color .25s,border-color .25s;border-left-color:var(--c)}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.card .nm{font-weight:600;font-size:15px;line-height:1.3}
+.badge{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:6px;white-space:nowrap;flex:none;
+  background:var(--cb);color:var(--c)}
+.card .row{display:flex;gap:8px;font-size:13px;color:var(--muted);margin-top:5px;align-items:baseline}
+.card .row .k{color:var(--faint);width:54px;flex:none;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding-top:1px}
+.card .row a{color:var(--fin);text-decoration:none;word-break:break-all}
+.card .pill{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;color:var(--ink)}
+.card .none{font-size:12px;color:var(--faint);font-style:italic;margin-top:6px}
+
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+.a-finance{--c:var(--fin);--cb:var(--fin-bg)}
+.a-marketing{--c:var(--mkt);--cb:var(--mkt-bg)}
+.a-dna{--c:var(--dna);--cb:var(--dna-bg)}
+.a-ob{--c:var(--ob);--cb:var(--ob-bg)}
+.a-om{--c:var(--om);--cb:var(--om-bg)}
+.a-es{--c:var(--es);--cb:var(--es-bg)}
+.a-gen{--c:var(--gen);--cb:var(--gen-bg)}
+
+@media (max-width:719px){
+  .grid-wrap{display:none}
+  .agenda{display:block}
+  h1{font-size:24px}
+  .who .name{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  #result.show{animation:none}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow" id="inst"></p>
+      <h1>Your week, at a glance</h1>
+    </div>
+    <div class="hd-right">
+      <div class="week"><span>Schedule for</span><b id="weekof"></b></div>
+      <button class="toggle" id="themeBtn" aria-label="Switch theme"></button>
+    </div>
+  </header>
+
+  <div class="lookup">
+    <h2>Find your schedule</h2>
+    <p>Enter your roll number to see where, when, and with whom your electives meet this week.</p>
+    <div class="field">
+      <input type="text" id="roll" placeholder="e.g. 25MBA106" autocomplete="off" spellcheck="false" aria-label="Roll number">
+      <button class="go" id="btn">Show my week</button>
+    </div>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div id="result"></div>
+
+  <footer>
+    <span id="ft-term"></span>
+    <span>Tentative weekly schedule — confirm room/time changes with the department.</span>
+  </footer>
+</div>
+
+<script>
+const DATA = {"meta":{"institute":"Institute of Management, Nirma University","term":"MBA Term-IV","week_of":"2026-06-22"},"days":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"sessions":[{"name":"Session-I","start":"08:00AM","end":"09:00AM"},{"name":"Session-II","start":"09:10AM","end":"10:10AM"},{"name":"Session-III","start":"10:20AM","end":"11:20PM"},{"name":"Session-IV","start":"11:30AM","end":"12:30PM"},{"name":"Session-V","start":"1:30PM","end":"02:30PM"},{"name":"Session-VI","start":"02:40PM","end":"03:40PM"},{"name":"Session-VII","start":"03:50PM","end":"04:50PM"}],"events":[{"date":"2026-06-26","day":"Friday","type":"holiday","name":"Muharram"}],"sections":{"1":{"abbr":"BM","name":"Bank Management* (With IMBA)","area":"Finance","division":"A","faculty":"Lalit Arora","email":"lalit.arora@nirmauni.ac.in","room":"T6","meetings":[{"day":"Tuesday","session":"Session-II","start":"09:10AM","end":"10:10AM"}]},"2":{"abbr":"BM","name":"Bank Management* (With IMBA)","area":"Finance","division":"B","faculty":"Lalit Arora","email":"lalit.arora@nirmauni.ac.in","room":"T6","meetings":[{"day":"Tuesday","session":"Session-III","start":"10:20AM","end":"11:20PM"}]},"3":{"abbr":"BM","name":"Bank Management* (With IMBA)","area":"Finance","division":"C","faculty":"Lalit Arora","email":"lalit.arora@nirmauni.ac.in","room":"T6","meetings":[{"day":"Tuesday","session":"Session-IV","start":"11:30AM","end":"12:30PM"}]},"4":{"abbr":"FSA","name":"Financial Statement Analysis","area":"Finance","division":"A","faculty":"Parag Rijwani","email":"parag@nirmauni.ac.in","room":"T6","meetings":[{"day":"Monday","session":"Session-III","start":"10:20AM","end":"11:20PM"},{"day":"Wednesday","session":"Session-III","start":"10:20AM","end":"11:20PM"}]},"5":{"abbr":"FSA","name":"Financial Statement Analysis","area":"Finance","division":"B","faculty":"Parag Rijwani","email":"parag@nirmauni.ac.in","room":"T6","meetings":[{"day":"Monday","session":"Session-IV","start":"11:30AM","end":"12:30PM"},{"day":"Wednesday","session":"Session-IV","start":"11:30AM","end":"12:30PM"}]},"6":{"abbr":"FSA","name":"Financial Statement Analysis","area":"Finance","division":"C","faculty":"Pankaj Agrawal","email":"pankaj.agrawal@nirmauni.ac.in","room":"T5","meetings":[{"day":"Monday","session":"Session-IV","start":"11:30AM","end":"12:30PM"},{"day":"Wednesday","session":"Session-IV","start":"11:30AM","end":"12:30PM"}]},"7":{"abbr":"IPM","name":"Investment and Portfolio Management","area":"Finance","division":"A","faculty":"Nikunj Patel","email":"nikunj@nirmauni.ac.in","room":"T6","meetings":[{"day":"Monday","session":"Session-II","start":"09:10AM","end":"10:10AM"}]},"8":{"abbr":"IPM","name":"Investment and Portfolio Management","area":"Finance","division":"B","faculty":"Nikunj Patel","email":"nikunj@nirmauni.ac.in","room":"T6","meetings":[{"day":"Monday","session":"Session-I","start":"08:00AM","end":"09:00AM"}]},"9":{"abbr":"IPM","name":"Investment and Portfolio Management","area":"Finance","division":"C","faculty":"Bhavesh Patel","email":"bhavesh@nirmauni.ac.in","room":"T5","meetings":[{"day":"Monday","session":"Session-I","start":"08:00AM","end":"09:00AM"}]},"10":{"abbr":"IPM","name":"Investment and Portfolio Management","area":"Finance","division":"D","faculty":"Dipti Saraf","email":"dipti.saraf@nirmauni.ac.in","room":"309-F","meetings":[{"day":"Monday","session":"Session-I","start":"08:00AM","end":"09:00AM"}]},"11":{"abbr":"MFS","name":"Management of Financial Service","area":"Finance","division":"A","faculty":"Rajesh Shah","email":"rajeshshah@nirmauni.ac.in","room":"T5","meetings":[{"day":"Thursday","session":"Session-VI","start":"02:40PM","end":"03:40PM"}]},"12":{"abbr":"MFS","name":"Management of Financial Service","area":"Finance","division":"B","faculty":"Rajesh Shah","email":"rajeshshah@nirmauni.ac.in","room":"T5","meetings":[{"day":"Thursday","session":"Session-V","start":"1:30PM","end":"02:30PM"}]},"13":{"abbr":"TQM","name":"Total Quality Management * (MBA+IMBA)","area":"OM","division":"A","faculty":"A. B. Raju","email":"abraju@nirmauni.ac.in","room":"E6","meetings":[{"day":"Tuesday","session":"Session-VII","start":"03:50PM","end":"04:50PM"}]},"14":{"abbr":"TQM","name":"Total Quality Management * (MBA+IMBA)","area":"OM","division":"B","faculty":"A. B. Raju","email":"abraju@nirmauni.ac.in","room":"E6","meetings":[{"day":"Tuesday","session":"Session-VI","start":"02:40PM","end":"03:40PM"}]},"15":{"abbr":"CB","name":"Consumer Behaviour","area":"Marketing","division":"A","faculty":"Himanshu Chauhan","email":"himanshuchauhan@nirmauni.ac.in","room":"T4","meetings":[{"day":"Monday","session":"Session-I","start":"08:00AM","end":"09:00AM"}]},"16":{"abbr":"CB","name":"Consumer Behaviour","area":"Marketing","division":"B","faculty":"Himanshu Chauhan","email":"himanshuchauhan@nirmauni.ac.in","room":"T4","meetings":[{"day":"Monday","session":"Session-II","start":"09:10AM","end":"10:10AM"}]},"17":{"abbr":"CB","name":"Consumer Behaviour","area":"Marketing","division":"C","faculty":"Jayesh Aagja","email":"jayeshaagja@nirmauni.ac.in","room":"T5","meetings":[{"day":"Monday","session":"Session-II","start":"09:10AM","end":"10:10AM"}]},"18":{"abbr":"I&PM","name":"Innovation and Product Management","area":"Marketing","division":"A","faculty":"Sandip Trada","email":"sandip@nirmauni.ac.in","room":"T4","meetings":[{"day":"Tuesday","session":"Session-III","start":"10:20AM","end":"11:20PM"}]},"19":{"abbr":"I&PM","name":"Innovation and Product Management","area":"Marketing","division":"B","faculty":"Rupam Deb","email":"rupam.deb@nirmauni.ac.in","room":"T5","meetings":[{"day":"Tuesday","session":"Session-III","start":"10:20AM","end":"11:20PM"}]},"20":{"abbr":"I&PM","name":"Innovation and Product Management","area":"Marketing","division":"C","faculty":"Rupam Deb","email":"rupam.deb@nirmauni.ac.in","room":"T5","meetings":[{"day":"Tuesday","session":"Session-II","start":"09:10AM","end":"10:10AM"}]},"21":{"abbr":"RMKT","name":"Retail Marketing * (1 Division with IMBA)","area":"Marketing","division":"A","faculty":"Sapna Prashar","email":"sapna@nirmauni.ac.in","room":"E6","meetings":[{"day":"Wednesday","session":"Session-III","start":"10:20AM","end":"11:20PM"}]},"22":{"abbr":"RMKT","name":"Retail Marketing * (1 Division with IMBA)","area":"Marketing","division":"B","faculty":"Sapna Prashar","email":"sapna@nirmauni.ac.in","room":"E6","meetings":[{"day":"Wednesday","session":"Session-IV","start":"11:30AM","end":"12:30PM"}]},"23":{"abbr":"S&DM","name":"Sales & Distribution Management ( With HRM)","area":"Marketing","division":"A","faculty":"Pradeep Kautish","email":"pradeep.kautish@nirmauni.ac.in","room":"T4","meetings":[{"day":"Tuesday","session":"Session-IV","start":"11:30AM","end":"12:30PM"}]},"24":{"abbr":"S&DM","name":"Sales & Distribution Management ( With HRM)","area":"Marketing","division":"B","faculty":"Abhishek Shrivastav","email":"abhishek.shrivastav_vf@nirmauni.ac.in","room":"T4","meetings":[]},"25":{"abbr":"S&DM","name":"Sales & Distribution Management ( With HRM)","area":"Marketing","division":"C","faculty":"Abhishek Shrivastav","email":"abhishek.shrivastav_vf@nirmauni.ac.in","room":"T4","meetings":[]},"26":{"abbr":"SBM","name":"Strategic Brand Management","area":"Marketing","division":"A","faculty":"Sanjay Jain","email":"sanjayjain@nirmauni.ac.in","room":"T6","meetings":[{"day":"Tuesday","session":"Session-V","start":"1:30PM","end":"02:30PM"},{"day":"Thursday","session":"Session-V","start":"1:30PM","end":"02:30PM"}]},"27":{"abbr":"SBM","name":"Strategic Brand Management","area":"Marketing","division":"B","faculty":"Sanjay Jain","email":"sanjayjain@nirmauni.ac.in","room":"T6","meetings":[{"day":"Tuesday","session":"Session-VI","start":"02:40PM","end":"03:40PM"},{"day":"Thursday","session":"Session-VI","start":"02:40PM","end":"03:40PM"}]},"28":{"abbr":"SBM","name":"Strategic Brand Management","area":"Marketing","division":"C","faculty":"Riddhi Ambavale","email":"riddhi.ambavale_vf@nirmauni.ac.in","room":"T6","meetings":[]},"29":{"abbr":"PML","name":"People Management and Leadership * (With IMBA)","area":"OB","division":null,"faculty":"Deepa Sanghavi","email":"deepasanghavi@nirmauni.ac.in","room":"E6","meetings":[]},"30":{"abbr":"BI","name":"Business Intelligence","area":"DnA","division":"A","faculty":"Somayya Madakam","email":"somayya.madakam@nirmauni.ac.in","room":"T6","meetings":[{"day":"Monday","session":"Session-VI","start":"02:40PM","end":"03:40PM"},{"day":"Thursday","session":"Session-IV","start":"11:30AM","end":"12:30PM"}]},"31":{"abbr":"BI","name":"Business Intelligence","area":"DnA","division":"B","faculty":"Somayya Madakam","email":"somayya.madakam@nirmauni.ac.in","room":"T6","meetings":[{"day":"Monday","session":"Session-V","start":"1:30PM","end":"02:30PM"},{"day":"Thursday","session":"Session-III","start":"10:20AM","end":"11:20PM"}]},"32":{"abbr":"ERP","name":"Enterprise Resource Planning","area":"DnA","division":"A","faculty":"P. Ganesh","email":"pganesh@nirmauni.ac.in","room":"T4","meetings":[]},"33":{"abbr":"ERP","name":"Enterprise Resource Planning","area":"DnA","division":"B","faculty":"P. Ganesh","email":"pganesh@nirmauni.ac.in","room":"T4","meetings":[]},"34":{"abbr":"MBC","name":"Managing Business on Cloud","area":"DnA","division":"A","faculty":"Shubham Goswami","email":"shubham.goswami@nirmauni.ac.in","room":"309-F","meetings":[]},"35":{"abbr":"MBC","name":"Managing Business on Cloud","area":"DnA","division":"B","faculty":"Shubham Goswami","email":"shubham.goswami@nirmauni.ac.in","room":"309-F","meetings":[]},"36":{"abbr":"IB","name":"International Business* (MBA+IMBA)","area":"E & S","division":null,"faculty":"Punit Saurabh","email":"punit@nirmauni.ac.in","room":"E6","meetings":[{"day":"Monday","session":"Session-V","start":"1:30PM","end":"02:30PM"},{"day":"Wednesday","session":"Session-V","start":"1:30PM","end":"02:30PM"}]}},"students":{"22BCM002":{"n":"Shah Aaryan Hemang","b":"22BCM","s":["2","4","7","11","30","34"]},"22BCM004":{"n":"Abhinav Sinha","b":"22BCM","s":["2","4","7","11","30","34"]},"22BCM006":{"n":"Aditya S Chaudhari","b":"22BCM","s":["13","30","32","35","36"]},"22BCM011":{"n":"Bhavnish Nanda","b":"22BCM","s":["2","4","9","11","30","34"]},"22BCM012":{"n":"Chaudhary Amankumar Sardarbhai","b":"22BCM","s":["2","6","8","30","33","35"]},"22BCM013":{"n":"Patel Chinmay Bharatkumar","b":"22BCM","s":["2","4","9","11","30","34"]},"22BCM015":{"n":"Dev Paragkumar Mehta","b":"22BCM","s":["4","7","11","30","33","34"]},"22BCM018":{"n":"Dhun Chhabra","b":"22BCM","s":["2","4","9","11","30","34"]},"22BCM019":{"n":"Gajjar Maitry Hasmukh","b":"22BCM","s":["4","7","11","30","33","34"]},"22BCM020":{"n":"Jain Hardik Gajraj","b":"22BCM","s":["4","9","12","30","34","36"]},"22BCM022":{"n":"Ms. Harshita Sharma","b":"22BCM","s":["1","4","7","30","32","34"]},"22BCM023":{"n":"Hetavi Patel","b":"22BCM","s":["1","4","7","30","33","34"]},"22BCM026":{"n":"Gandhi Jainish Prabhav","b":"22BCM","s":["2","7","30","34"]},"22BCM028":{"n":"Jaskeerat Kaur","b":"22BCM","s":["3","5","9","30","36"]},"22BCM029":{"n":"Kalash Hardikkumar Shah","b":"22BCM","s":["2","4","7","30","34"]},"22BCM031":{"n":"Kartikay Saxena","b":"22BCM","s":["5","7","11","30","33","36"]},"22BCM032":{"n":"Kashyap Naresh Choithani","b":"22BCM","s":["3","4","8","30","34","36"]},"22BCM033":{"n":"Kenilkumar Kaneria","b":"22BCM","s":["3","10","30","35","36"]},"22BCM035":{"n":"Raja Krish Sudhirbhai","b":"22BCM","s":["4","9","11","30","34"]},"22BCM037":{"n":"Faldu Kush Kirankumar","b":"22BCM","s":["2","4","7","30","33","34"]},"22BCM039":{"n":"Maahi Deven Goratela","b":"22BCM","s":["16","20","25","27","30","35"]},"22BCM041":{"n":"Mohit Ginglani","b":"22BCM","s":["4","7","11","30","33","34"]},"22BCM044":{"n":"Nidhi Bangar","b":"22BCM","s":["2","4","9","11","30","34"]},"22BCM045":{"n":"Joshi Prem Hirenkumar","b":"22BCM","s":["2","10","30","33","35"]},"22BCM046":{"n":"Patel Prutha Piyushkumar","b":"22BCM","s":["4","9","11","30","34","36"]},"22BCM048":{"n":"Rajat Goswami","b":"22BCM","s":["2","6","7","30","33","35"]},"22BCM049":{"n":"Raunak Prasad","b":"22BCM","s":["3","4","9","11","30","34"]},"22BCM050":{"n":"Raval Nikhilkumar Revabhai","b":"22BCM","s":["3","9","12","30","35","36"]},"22BCM051":{"n":"Rishika Bhatt","b":"22BCM","s":["3","6","10","30","35","36"]},"22BCM053":{"n":"Rushi Shah","b":"22BCM","s":["3","4","9","30","34","36"]},"22BCM054":{"n":"Samarth Rupang Shah","b":"22BCM","s":["2","4","9","11","30","34"]},"22BCM056":{"n":"Satvik Gaikwad","b":"22BCM","s":["2","7","11","30","33","34"]},"22BCM064":{"n":"Vedant Sushil Kumar","b":"22BCM","s":["2","4","7","11","30","34"]},"22BCM065":{"n":"Veena Gidwani","b":"22BCM","s":["5","7","11","30","33","36"]},"25MBA110":{"n":"Bellani Sanya Jitendra","b":"25MBA","s":["4","7","11","30","34"]},"25MBA126":{"n":"Lala Murad Ashraf Mohmedasif","b":"25MBA","s":["20","22","25","27","30","35"]},"25MBA141":{"n":"Priyanshi Yadav","b":"25MBA","s":["17","25","27","30","33","35"]},"25MBA150":{"n":"Jagetia Subhi Naresh Kavita","b":"25MBA","s":["3","4","9","11","30","34"]},"25MBA157":{"n":"Yuvraj Shuryavanshi","b":"25MBA","s":["15","18","23","27","30","35"]},"25MBA210":{"n":"Agarwal Deeksha Naresh Kumar Vandana","b":"25MBA","s":["2","4","7","30","34"]},"25MBA211":{"n":"Deep Shaileshkumar Bera","b":"25MBA","s":["2","4","7","30","34"]},"25MBA213":{"n":"Bhansali Dhrumil Prakashbhai","b":"25MBA","s":["3","4","7","30","34"]},"25MBA221":{"n":"Jaivrat Singh Jodha","b":"25MBA","s":["3","6","10","24","28","30"]},"25MBA235":{"n":"Patel Poojan Bhadreshbhai","b":"25MBA","s":["4","7","11","30","34","36"]},"25MBA242":{"n":"Tiwari Sachin Santosh","b":"25MBA","s":["2","4","9","30","34","36"]},"25MBA246":{"n":"Shah Shruti Jigarbhai","b":"25MBA","s":["4","7","11","30","33","34"]},"25MBA309":{"n":"Shah Dev Jignesh Chaitrali","b":"25MBA","s":["1","4","7","30","33","34"]},"25MBA315":{"n":"Eralwala Abbas Mohammadibhai","b":"25MBA","s":["2","4","7","30","33","34"]},"25MBA321":{"n":"Keertan Patel","b":"25MBA","s":["5","9","30","32","36"]},"25MBA327":{"n":"Patel Mansi Himanshu Bhavana","b":"25MBA","s":["1","4","7","30","32","34"]},"25MBA353":{"n":"Vazirani Mohit Rajeshbhai","b":"25MBA","s":["9","11","16","20","26","30"]},"25MBA405":{"n":"Gami Ashwin Ramji Nayana","b":"25MBA","s":["1","5","9","30","32"]},"25MBA406":{"n":"Chaahat Sisodia","b":"25MBA","s":["1","4","7","30","32","34"]},"25MBA421":{"n":"Jainica Pandya","b":"25MBA","s":["16","20","22","28","30","35"]},"25MBA431":{"n":"Limbachiya Nisarg Jayeshbhai","b":"25MBA","s":["1","5","9","11","30","33"]},"25MBA436":{"n":"Patel Rajat Kalpeshkumar","b":"25MBA","s":["13","30","32","34","36"]},"25MBA437":{"n":"Pavleen Kaur Saini","b":"25MBA","s":["2","9","11","30","34"]},"25MBA442":{"n":"Sani Kunal Vijay","b":"25MBA","s":["5","7","11","18","23","30"]},"25MBA446":{"n":"Supriya Jain","b":"25MBA","s":["1","4","7","30","32","34"]},"25MBA502":{"n":"Bhavsar Aditya Minal","b":"25MBA","s":["1","4","9","30","32","34"]},"25MBA506":{"n":"Koul Aryan Vishal Krithika","b":"25MBA","s":["2","4","7","30","34"]},"25MBA513":{"n":"Khatusuriya Dhruti Rajeshkumar","b":"25MBA","s":["2","4","7","30","34"]},"25MBA518":{"n":"Shah Helli","b":"25MBA","s":["2","6","10","30","33"]},"25MBA526":{"n":"Lavesh Paliwal","b":"25MBA","s":["3","4","9","30","34","36"]},"25MBA532":{"n":"Nikunj Gupta","b":"25MBA","s":["2","4","7","30","34"]},"25MBA550":{"n":"Shukla Urja Yagneshkumar","b":"25MBA","s":["15","18","27","30","34"]},"25MBA553":{"n":"Vatsal Dharmesh Shah","b":"25MBA","s":["4","7","11","15","30","34"]},"25MBA556":{"n":"Agarwal Vratika Deepak","b":"25MBA","s":["2","6","8","30","33","35"]},"25MBA612":{"n":"Chitranshi Babel","b":"25MBA","s":["6","8","12","30","35","36"]},"25MBA618":{"n":"Shah Hit Kiritkumar","b":"25MBA","s":["2","5","9","23","28","30"]},"25MBA619":{"n":"Hitesh O Jeswani","b":"25MBA","s":["20","22","27","30","35","36"]},"25MBA624":{"n":"Kotwal Dhairya Deepak","b":"25MBA","s":["2","9","11","30","35","36"]},"25MBA634":{"n":"Patel Parthkumar Pareshbhai","b":"25MBA","s":["2","4","7","11","30","34"]},"25MBA642":{"n":"Shreya Doshi","b":"25MBA","s":["2","4","7","11","30","34"]},"25MBA645":{"n":"Suthar Manavkumar Vinodbhai","b":"25MBA","s":["13","28","30","32","35","36"]},"25MGM003":{"n":"Riya Abrole","b":"25MGM","s":["16","18","27","30","35","36"]},"22BCM001":{"n":"Aakanksha Rajpal","b":"22BCM","s":["15","18","23","27","31","35"]},"22BCM003":{"n":"Sarda Aayush Ram","b":"22BCM","s":["5","8","11","31","33"]},"22BCM005":{"n":"Aditya D Pandey","b":"22BCM","s":["2","8","11","31","33","35"]},"22BCM007":{"n":"Shah Ansh Mehul","b":"22BCM","s":["3","4","9","12","31","34"]},"22BCM008":{"n":"Anubhav Shah","b":"22BCM","s":["3","6","8","12","31","35"]},"22BCM009":{"n":"Aryana Gaurang Ghugharawala","b":"22BCM","s":["4","10","12","31","34"]},"22BCM010":{"n":"Asmita Dubey","b":"22BCM","s":["3","4","9","29","31","34"]},"22BCM014":{"n":"Chitrang Patel","b":"22BCM","s":["2","4","8","31","33","34"]},"22BCM016":{"n":"Thummar Dharm Kishorbhai","b":"22BCM","s":["3","4","9","12","31","34"]},"22BCM021":{"n":"Harsh Koradiya","b":"22BCM","s":["15","18","23","27","31","35"]},"22BCM024":{"n":"Himanshi Yaduvanshi","b":"22BCM","s":["20","22","25","27","31","35"]},"22BCM025":{"n":"Mahudawala Husain","b":"22BCM","s":["16","20","22","27","31","35"]},"22BCM027":{"n":"Jash Dadhaniya","b":"22BCM","s":["15","18","23","28","31","35"]},"22BCM034":{"n":"Keshini R Trivedi","b":"22BCM","s":["15","22","23","27","31","35"]},"22BCM036":{"n":"Kshitij Patil","b":"22BCM","s":["3","6","10","31","35"]},"22BCM040":{"n":"Manit Sachin Shah","b":"22BCM","s":["14","31","35"]},"22BCM043":{"n":"Nandini Agarwal","b":"22BCM","s":["4","8","12","31","33","34"]},"22BCM047":{"n":"Raghav Joshi","b":"22BCM","s":["3","10","12","31","35"]},"22BCM055":{"n":"Samraat Pratap Singh","b":"22BCM","s":["18","22","25","27","31","35"]},"22BCM057":{"n":"Prajapati Shlok Devendrabhai","b":"22BCM","s":["6","8","12","31","35"]},"22BCM058":{"n":"Shratik Rathor","b":"22BCM","s":["4","8","12","31","34"]},"22BCM059":{"n":"Shubham Patidar","b":"22BCM","s":["3","6","8","12","31","35"]},"22BCM060":{"n":"Sparsh Mukul Partani","b":"22BCM","s":["15","20","25","27","31","35"]},"22BCM061":{"n":"Tanishka Gupta","b":"22BCM","s":["17","18","21","27","31","33"]},"22BCM062":{"n":"Domadiya Uday Bharatbhai","b":"22BCM","s":["6","10","12","31"]},"22BCM066":{"n":"Yana Joseph","b":"22BCM","s":["13","31","32","35"]},"24MBA543":{"n":"Nimit Jain","b":"24MBA","s":["1","6","7","29","31","32"]},"25MBA104":{"n":"Aman","b":"25MBA","s":["15","18","23","27","31","35"]},"25MBA107":{"n":"Arnab Chatterjee","b":"25MBA","s":["1","5","8","18","23","31"]},"25MBA122":{"n":"Shah Kashish Nilesh","b":"25MBA","s":["3","8","12","31","35"]},"25MBA130":{"n":"Naik Ninad Sandeep","b":"25MBA","s":["1","5","8","12","18","31"]},"25MBA131":{"n":"Mandviwala Nitya Shailenkumar","b":"25MBA","s":["3","4","8","31","34"]},"25MBA140":{"n":"Priyal Sharma","b":"25MBA","s":["2","4","9","31","33","34"]},"25MBA148":{"n":"Shah Siddharth Ashwin","b":"25MBA","s":["3","6","9","29","31","35"]},"25MBA155":{"n":"Soni Vishwa Rupesh","b":"25MBA","s":["3","6","8","12","31","35"]},"25MBA209":{"n":"Bhavya Khemka","b":"25MBA","s":["4","8","12","31","33","34"]},"25MBA217":{"n":"Gelot Sima Pravinbhai","b":"25MBA","s":["3","6","10","31","35"]},"25MBA225":{"n":"Bansal Kritika Rajendra Seema","b":"25MBA","s":["2","8","12","31","33","35"]},"25MBA226":{"n":"Goswami Kunalgiri Hiteshgiri","b":"25MBA","s":["2","6","8","31","33","35"]},"25MBA230":{"n":"Anadkat Neeva Bhavinbhai","b":"25MBA","s":["2","6","8","31","33","35"]},"25MBA231":{"n":"Palak Unadkat","b":"25MBA","s":["4","8","12","29","31","34"]},"25MBA233":{"n":"Parv Methi","b":"25MBA","s":["2","6","8","31","33","35"]},"25MBA234":{"n":"Patel Meet Maheshbhai","b":"25MBA","s":["2","4","9","31","33","34"]},"25MBA240":{"n":"Priyanshu Jain","b":"25MBA","s":["17","18","24","28","31","35"]},"25MBA250":{"n":"Tisha Jindal","b":"25MBA","s":["13","19","31","32","35"]},"25MBA251":{"n":"Tomar Aman Dineshsingh","b":"25MBA","s":["2","6","8","31","33","35"]},"25MBA305":{"n":"Patel Aryan Damji Rekha","b":"25MBA","s":["3","5","8","14","29","31"]},"25MBA306":{"n":"Ayaan Rashid Sheikh","b":"25MBA","s":["2","4","10","31","33","34"]},"25MBA320":{"n":"Makhija Kashish Vinodkumar","b":"25MBA","s":["17","20","25","27","31","35"]},"25MBA323":{"n":"Katariya Krisha Vijaybhai","b":"25MBA","s":["4","9","12","31","33","34"]},"25MBA325":{"n":"Kriti Bhatt","b":"25MBA","s":["1","6","10","12","19","31"]},"25MBA331":{"n":"Nirjar Jain","b":"25MBA","s":["6","9","11","29","31","33"]},"25MBA337":{"n":"Rachchh Hard Chetanbhai","b":"25MBA","s":["2","4","9","31","33","34"]},"25MBA338":{"n":"Gadhvi Rajal Pravindan","b":"25MBA","s":["2","6","8","31","33","35"]},"25MBA342":{"n":"Ritik Nagpal","b":"25MBA","s":["2","5","9","23","28","31"]},"25MBA343":{"n":"Riya Gupta","b":"25MBA","s":["4","8","12","31","33","34"]},"25MBA344":{"n":"Sankhala Arin Kamlesh","b":"25MBA","s":["2","6","10","12","31","33"]},"25MBA408":{"n":"Chinmay M Dole","b":"25MBA","s":["3","4","8","12","31","34"]},"25MBA424":{"n":"Kashish Lakhani","b":"25MBA","s":["3","4","8","12","31","34"]},"25MBA425":{"n":"Kunal Yadav","b":"25MBA","s":["3","5","8","12","14","31"]},"25MBA434":{"n":"Panchal Ashwini Manojkumar","b":"25MBA","s":["2","4","8","31","33","34"]},"25MBA440":{"n":"Riya Shewani","b":"25MBA","s":["2","6","7","29","31","33"]},"25MBA443":{"n":"Sargam Agrawani","b":"25MBA","s":["3","4","8","12","31","34"]},"25MBA448":{"n":"Valwani Divya Ghanshyam","b":"25MBA","s":["6","8","12","29","31","35"]},"25MBA452":{"n":"Vidhi Dinesh Patel","b":"25MBA","s":["2","4","8","31","33","34"]},"25MBA505":{"n":"Anany Chaudhry","b":"25MBA","s":["18","22","23","27","31","35"]},"25MBA509":{"n":"Pandya Brunee Hemish","b":"25MBA","s":["12","15","23","28","31","35"]},"25MBA520":{"n":"Soni Hirva Kalpeshkumar","b":"25MBA","s":["6","8","12","31","33","35"]},"25MBA531":{"n":"Fernandes Michael Peter","b":"25MBA","s":["3","5","8","24","28","31"]},"25MBA549":{"n":"Shivnani Khusbu Jayprakash","b":"25MBA","s":["3","4","9","31","34"]},"25MBA602":{"n":"Pandey Abhishek Ayodhya","b":"25MBA","s":["18","21","26","29","31","32"]},"25MBA615":{"n":"Gungun Satija","b":"25MBA","s":["16","20","22","27","31","35"]},"25MBA628":{"n":"Singh Mansi Sabhajit Vimla","b":"25MBA","s":["9","11","16","18","26","31"]},"25MBA633":{"n":"Parmar Dhruv Dineshbhai","b":"25MBA","s":["3","4","8","12","31","34"]},"25MBA636":{"n":"Praneet Srivastava","b":"25MBA","s":["17","20","24","28","31","35"]},"25MGM002":{"n":"Patel Kathan Laljibhai","b":"25MGM","s":["3","5","9","12","31","35"]},"24MBA362":{"n":"Yash Gaggar","b":"24MBA","s":["1","5","8","19","24","28"]},"25MBA106":{"n":"Anwesha Khanna","b":"25MBA","s":["1","5","8","11","19","26"]},"25MBA116":{"n":"Eshika Karelia","b":"25MBA","s":["1","6","10","19","24","28"]},"25MBA118":{"n":"Harsh Burman","b":"25MBA","s":["1","5","7","15","18","23"]},"25MBA121":{"n":"Kashish Gupta","b":"25MBA","s":["1","6","7","15","19","23"]},"25MBA127":{"n":"Manas Patidar","b":"25MBA","s":["1","8","11","19","25","26"]},"25MBA128":{"n":"Talreja Mitali Jayeshkumar","b":"25MBA","s":["1","5","7","18","23","26"]},"25MBA129":{"n":"Nandini Mrugendra Darbar","b":"25MBA","s":["1","9","16","18","23","27"]},"25MBA132":{"n":"Parmar Harshini Tarunkumar","b":"25MBA","s":["1","9","16","18","23","27"]},"25MBA133":{"n":"Parmar Raghav Satishbhai","b":"25MBA","s":["1","6","7","15","19","25"]},"25MBA144":{"n":"Sagar Sharma","b":"25MBA","s":["1","6","10","19","24","28"]},"25MBA146":{"n":"Shivang Singhal","b":"25MBA","s":["1","5","7","15","18","24"]},"25MBA147":{"n":"Shivansh Rai","b":"25MBA","s":["1","6","10","19","24","28"]},"25MBA151":{"n":"Thakkar Khush Ashish","b":"25MBA","s":["1","6","9","12","16","19"]},"25MBA153":{"n":"Vanshika Pradhan","b":"25MBA","s":["1","6","7","15","19","27"]},"25MBA214":{"n":"Dhruval Chunilal Pansuriya","b":"25MBA","s":["1","9","19","25","27"]},"25MBA220":{"n":"Jadhav Samay Sanjay","b":"25MBA","s":["1","6","10","19","24","28"]},"25MBA256":{"n":"Desai Vishva","b":"25MBA","s":["1","7","11","18","23","26"]},"25MBA326":{"n":"Makwana Harshit Mayurbhai","b":"25MBA","s":["1","10","17","19","25","27"]},"25MBA340":{"n":"Chawla Riddhi Gopi","b":"25MBA","s":["1","9","18","22","23","27"]},"25MBA351":{"n":"Vaibhavi Singh","b":"25MBA","s":["1","9","18","21","23","28"]},"25MBA404":{"n":"Ashish Animesh Jha","b":"25MBA","s":["1","5","8","17","19","26"]},"25MBA410":{"n":"Dev Paresh Gor","b":"25MBA","s":["1","6","10","19","21","27"]},"25MBA415":{"n":"Dharyajeet Sinh Vaghela","b":"25MBA","s":["1","6","10","19","21","27"]},"25MBA417":{"n":"Lohiya Dhruv","b":"25MBA","s":["1","8","19","23","27"]},"25MBA418":{"n":"Harsh Tanaji Mane","b":"25MBA","s":["1","5","8","19","25","27"]},"25MBA433":{"n":"Nitya Yasheshkumar Shah","b":"25MBA","s":["1","9","11","18","22","26"]},"25MBA441":{"n":"Modi Sachit Nileshkumar Kavitaben","b":"25MBA","s":["1","6","7","13","18","32"]},"25MBA444":{"n":"Gopale Shekha Jitendra","b":"25MBA","s":["1","6","10","19","25","27"]},"25MBA447":{"n":"Suyash Malik","b":"25MBA","s":["1","7","18","22","23","26"]},"25MBA449":{"n":"Vansh H Galani","b":"25MBA","s":["1","5","9","19","21","27"]},"25MBA450":{"n":"Varma Het Vijaykumar","b":"25MBA","s":["1","8","19","24","28"]},"25MBA454":{"n":"Yashika Kinger","b":"25MBA","s":["1","6","8","12","19","25"]},"25MBA501":{"n":"Abhaykant Singh","b":"25MBA","s":["1","5","9","16","19","23"]},"25MBA510":{"n":"Chanchal Motwani","b":"25MBA","s":["1","5","9","18","27"]},"25MBA523":{"n":"Keval Ashok Thakkar","b":"25MBA","s":["1","7","15","19","25","27"]},"25MBA524":{"n":"Kewalramani Divyansh Kamlesh","b":"25MBA","s":["1","5","9","18","21","27"]},"25MBA527":{"n":"Maheriya Rahul Bharatkumar","b":"25MBA","s":["1","8","19","24","28"]},"25MBA528":{"n":"Malvika Lalwani","b":"25MBA","s":["1","5","8","18","23","27"]},"25MBA534":{"n":"Nitesh","b":"25MBA","s":["1","5","9","16","18","23"]},"25MBA537":{"n":"Saikia Rahul Anil Sumi","b":"25MBA","s":["1","5","7","14","15","18"]},"25MBA543":{"n":"Sanghvi Shashwat Chaitanya","b":"25MBA","s":["1","9","16","18","22","27"]},"25MBA548":{"n":"Shivansh Saxena","b":"25MBA","s":["1","5","8","17","18","23"]},"25MBA608":{"n":"Shah Bhavya Mayurkumar","b":"25MBA","s":["1","5","8","12","18","25"]},"25MBA610":{"n":"Chaudhari Mihir Baldevbhai","b":"25MBA","s":["1","6","10","16","19","29"]},"25MBA616":{"n":"Happy Vekariya","b":"25MBA","s":["1","6","9","12","16","19"]},"25MBA620":{"n":"Jay Shah","b":"25MBA","s":["1","5","9","12","19","23"]},"25MBA626":{"n":"Kunwar Sandeep Gajendra","b":"25MBA","s":["1","5","7","12","13","32"]},"25MBA630":{"n":"Meghnathi Rudreshgiri Bhagvangiri","b":"25MBA","s":["1","5","7","12","15","19"]},"25MBA635":{"n":"Pandey Parul Navin Pratima","b":"25MBA","s":["1","9","18","22","23","26"]},"25MBA638":{"n":"Rajendra Singh Rao","b":"25MBA","s":["1","5","8","12","18","25"]},"25MBA640":{"n":"Saransh Sharma","b":"25MBA","s":["1","5","7","19","24","28"]},"25MBA641":{"n":"Sejal Agnihotri","b":"25MBA","s":["1","5","7","19","24","26"]},"25MBA643":{"n":"Simmi Sinduria","b":"25MBA","s":["1","8","17","19","22","28"]},"25MBA648":{"n":"Vidhi D Singhal","b":"25MBA","s":["1","5","7","11","18","26"]},"25MBA117":{"n":"Dhameliya Gitanshu Rajeshkumar","b":"25MBA","s":["2","5","7","11","33","36"]},"25MBA123":{"n":"Kevin Abraham","b":"25MBA","s":["2","4","8","12","33","34"]},"25MBA149":{"n":"Somaya Patel","b":"25MBA","s":["2","4","8","12","33","34"]},"25MBA317":{"n":"Vachharajani Het Nirenbhai","b":"25MBA","s":["2","5","9","16","23","27"]},"25MBA329":{"n":"Mounsoon Ranjan","b":"25MBA","s":["2","5","9","21","23","27"]},"25MBA407":{"n":"Chavda Nilesh Chandrakantbhai","b":"25MBA","s":["2","6","10","17","25","33"]},"25MBA409":{"n":"Desai Smit Natvarlal","b":"25MBA","s":["2","5","9","12","23"]},"25MBA411":{"n":"Mathuria Dev Rahul Rupal","b":"25MBA","s":["2","6","10","13","29","32"]},"25MBA515":{"n":"Garvit Sharma","b":"25MBA","s":["2","5","9","11","16","26"]},"25MBA522":{"n":"Vasa Kashish Virenbhai","b":"25MBA","s":["2","6","11","15","21","24"]},"25MBA529":{"n":"Mansi Sushil Pareek","b":"25MBA","s":["2","11","15","21","23","26"]},"25MBA533":{"n":"Nishit Raunak","b":"25MBA","s":["2","5","9","13","29","32"]},"25MBA539":{"n":"Rashi Deepak Shah","b":"25MBA","s":["2","11","15","21","23","26"]},"25MBA540":{"n":"Rathod Aakash Kirtibhai","b":"25MBA","s":["2","6","10","13","32"]},"25MBA544":{"n":"Satyam Kotak","b":"25MBA","s":["2","5","9","16","23","27"]},"25MBA559":{"n":"Billa Yuvraj Chandrashekhar","b":"25MBA","s":["2","4","7","34"]},"25MBA605":{"n":"Bhav Khandelwal","b":"25MBA","s":["2","5","8","13","32"]},"25MBA617":{"n":"Hardik Mohnot","b":"25MBA","s":["2","9","13","32","36"]},"25MBA622":{"n":"Kalp Mehta","b":"25MBA","s":["2","10","12","13","32"]},"25MBA631":{"n":"Mohit Mishra","b":"25MBA","s":["2","5","7","12","14"]},"25MBA637":{"n":"Mansinghka Pulkit","b":"25MBA","s":["2","5","7","14","23"]},"25MBA647":{"n":"Thakar Rushi Jitendrabhai","b":"25MBA","s":["2","6","8","13","29","32"]},"22BCM038":{"n":"Laksh Trivedi","b":"22BCM","s":["3","10","12","35"]},"25MBA112":{"n":"Bhankharia Shrushti Dhiren","b":"25MBA","s":["3","6","8","35","36"]},"25MBA152":{"n":"Utkarsh Jaiswal","b":"25MBA","s":["3","5","9","16","25","27"]},"25MBA154":{"n":"Jain Vishal Kirankumar","b":"25MBA","s":["3","6","8","14"]},"25MBA227":{"n":"Madhur Bulchandani","b":"25MBA","s":["3","6","17","21","24","28"]},"25MBA451":{"n":"Varun Jat","b":"25MBA","s":["3","6","8","17","27"]},"25MBA530":{"n":"Ondhiya Meet Vijaybhai","b":"25MBA","s":["3","6","10","29","35"]},"25MBA609":{"n":"Bhavya Prakash Lohana","b":"25MBA","s":["3","8","12","24","28","29"]},"24IBM166":{"n":"Sparsh Goyal","b":"24IBM","s":["3","21"]},"25IBM105":{"n":"Abhay Gundegaonkar","b":"25IBM","s":["3"]},"25IBM107":{"n":"Abhi Baflipara","b":"25IBM","s":["3"]},"25IBM108":{"n":"Aditi Singh Chauhan","b":"25IBM","s":["3"]},"25IBM109":{"n":"Aditya Agarwal","b":"25IBM","s":["3"]},"25IBM110":{"n":"Aditya Chandarana","b":"25IBM","s":["3","36"]},"25IBM113":{"n":"Akshat Jain","b":"25IBM","s":["3"]},"25IBM119":{"n":"Aryan Jiwan","b":"25IBM","s":["3","36"]},"25IBM126":{"n":"Deeksha Jain","b":"25IBM","s":["3","36"]},"25IBM130":{"n":"Diya Bohra","b":"25IBM","s":["3","21","29"]},"25IBM132":{"n":"Ghanshyam Patel","b":"25IBM","s":["3","29"]},"25IBM135":{"n":"Hetvi Shah","b":"25IBM","s":["3"]},"25IBM136":{"n":"Ishika Arun","b":"25IBM","s":["3"]},"25IBM139":{"n":"Komal Nileshkumar Thakor","b":"25IBM","s":["3"]},"25IBM143":{"n":"Malay Dagli","b":"25IBM","s":["3","36"]},"25IBM148":{"n":"Nirja Raghani","b":"25IBM","s":["3"]},"25IBM152":{"n":"Priyansh Agrawal","b":"25IBM","s":["3"]},"25IBM154":{"n":"Rishi Mayank Mehta","b":"25IBM","s":["3"]},"25IBM155":{"n":"Rudraksh Chhabra","b":"25IBM","s":["3"]},"25IBM156":{"n":"Thakkar Rudrakumar Manojkumar","b":"25IBM","s":["3"]},"25IBM158":{"n":"Shailly Multani","b":"25IBM","s":["3"]},"25IBM164":{"n":"Sreshta Balagopal","b":"25IBM","s":["3","21"]},"25IBM165":{"n":"Tanya Purohit","b":"25IBM","s":["3","36"]},"25IBM167":{"n":"Tarun Jain","b":"25IBM","s":["3"]},"25IBM172":{"n":"Vikhyat Jaswal","b":"25IBM","s":["3"]},"25IBM175":{"n":"Vishwa Trivedi","b":"25IBM","s":["3"]},"25IBM182":{"n":"Zeel Chaudhary","b":"25IBM","s":["3"]},"25MBA101":{"n":"Aakanksha Singhal","b":"25MBA","s":["15","18","21","23","27","33"]},"25MBA105":{"n":"Anish Ansari","b":"25MBA","s":["15","18","27","33","35"]},"25MBA108":{"n":"Aryan Jaroli","b":"25MBA","s":["6","7","15","20","21","27"]},"25MBA111":{"n":"Bhagat Khevna Hiteshkumar","b":"25MBA","s":["14","15","18","22","23","26"]},"25MBA114":{"n":"Davda Om Rameshbhai","b":"25MBA","s":["15","19","23","27","33","36"]},"25MBA134":{"n":"Chechani Parth","b":"25MBA","s":["15","18","21","25","27","36"]},"25MBA136":{"n":"Patel Het Jigneshbhai","b":"25MBA","s":["14","15","18","21","23","26"]},"25MBA156":{"n":"Yagnank Raval","b":"25MBA","s":["15","19","21","23","27","33"]},"25MBA204":{"n":"Ashi","b":"25MBA","s":["15","18","23","27"]},"25MBA206":{"n":"Jalan Ayush Prakash","b":"25MBA","s":["7","15","18","27","33"]},"25MBA208":{"n":"Solanki Bhargavsinh Jitendrasinh","b":"25MBA","s":["13","15","18","22","26","32"]},"25MBA215":{"n":"Jain Divy Amish","b":"25MBA","s":["13","15","18","22","23","32"]},"25MBA236":{"n":"Pranav Oza","b":"25MBA","s":["13","15","18","21","26","32"]},"25MBA237":{"n":"Prashant Tiwari","b":"25MBA","s":["7","15","20","24","28","36"]},"25MBA239":{"n":"Prerak Sinha","b":"25MBA","s":["6","7","11","15","21","26"]},"25MBA241":{"n":"Raval Saurav Niravkumar","b":"25MBA","s":["13","15","18","22","25","32"]},"25MBA244":{"n":"Shah Meet Manish","b":"25MBA","s":["13","15","18","22","26","32"]},"25MBA254":{"n":"Vanisha Parmar","b":"25MBA","s":["14","15","18","22","24","26"]},"25MBA257":{"n":"Zinzala Pradip Sadulbhai","b":"25MBA","s":["13","15","18","22","26","32"]},"25MBA311":{"n":"Rathi Devanshi Ritesh Prerna","b":"25MBA","s":["7","11","15","22","26"]},"25MBA316":{"n":"Surana Harsh Mukesh Praveena","b":"25MBA","s":["13","15","19","23","26","32"]},"25MBA330":{"n":"Murjani Mahek Naresh","b":"25MBA","s":["14","15","18","22","23","26"]},"25MBA335":{"n":"Pawan Kumar","b":"25MBA","s":["13","15","19","23","26","32"]},"25MBA347":{"n":"Shankheshwaria Parth Amitbhai","b":"25MBA","s":["15","19","23","27","33","36"]},"25MBA350":{"n":"Karnani Tarun Bhawani Shankar","b":"25MBA","s":["13","15","18","21","26","32"]},"25MBA354":{"n":"Vedant Somani","b":"25MBA","s":["15","20","21","25","27","36"]},"25MBA403":{"n":"Aryan Singhvi","b":"25MBA","s":["15","18","22","23","27","33"]},"25MBA412":{"n":"Devmorari Krutik Sureshkumar","b":"25MBA","s":["13","15","18","21","26","32"]},"25MBA413":{"n":"Devmurari Tushar Bhareshkumar","b":"25MBA","s":["14","15","20","21","24","26"]},"25MBA419":{"n":"Keswani Harshita Prakash","b":"25MBA","s":["14","15","18","22","23","26"]},"25MBA428":{"n":"Meenal Sharma","b":"25MBA","s":["13","15","19","28","32"]},"25MBA429":{"n":"Moiz Ali Bohra","b":"25MBA","s":["15","18","22","23","27","33"]},"25MBA507":{"n":"Jakhariya Ashni Mahesh Bharti","b":"25MBA","s":["14","15","18","22","23","26"]},"25MBA508":{"n":"Barchha Deep Manojbhai","b":"25MBA","s":["14","15","18","26"]},"25MBA516":{"n":"Gaurang  Patel","b":"25MBA","s":["13","15","22","23","26","32"]},"25MBA525":{"n":"Agarwal Krishna Vikas","b":"25MBA","s":["13","15","19","24","28","32"]},"25MBA535":{"n":"Pranav Anil Nair","b":"25MBA","s":["13","15","18","24","28","32"]},"25MBA536":{"n":"Acharya Raghavendra Vikas Rakhi","b":"25MBA","s":["14","15","22","23","28"]},"25MBA542":{"n":"Saksham Arora","b":"25MBA","s":["15","19","23","27","33"]},"25MBA547":{"n":"Shivank Agrawal","b":"25MBA","s":["15","18","23","28","33","36"]},"25MBA551":{"n":"Thakkur Rupesh Umesh","b":"25MBA","s":["15","18","23","27"]},"25MBA554":{"n":"Doshi Vihalkumar Miteshkumar","b":"25MBA","s":["13","15","19","23","26","32"]},"25MBA557":{"n":"Yashvi Bhansali","b":"25MBA","s":["15","18","22","23","27"]},"25MBA607":{"n":"Bhavya Jain","b":"25MBA","s":["13","15","19","22","24","32"]},"25MBA623":{"n":"Lalwani Kiran Sureshkumar","b":"25MBA","s":["15","21","25","27","33"]},"25MBA627":{"n":"Limbachiya Manan Falgun","b":"25MBA","s":["14","15","20","21","23","26"]},"25MBA644":{"n":"Soumya Soni","b":"25MBA","s":["5","7","15","18","26"]},"24MBA528":{"n":"Kariya Chirag Ketanbhai","b":"24MBA","s":["16","22","25","27","29","33"]},"25MBA109":{"n":"Shaikh Avesh Razak","b":"25MBA","s":["16","19","21","25","27","33"]},"25MBA119":{"n":"Dalal Harshraj Falgun","b":"25MBA","s":["13","16","25","26","29","32"]},"25MBA124":{"n":"Kevin Joy Nicey","b":"25MBA","s":["16","19","22","25","27","33"]},"25MBA135":{"n":"Desai Parth Pradip","b":"25MBA","s":["16","19","21","24","28","33"]},"25MBA137":{"n":"Patel Kunj Nitinbhai","b":"25MBA","s":["13","16","20","22","25","32"]},"25MBA142":{"n":"Priyanshu Kumar","b":"25MBA","s":["16","20","22","24","28","29"]},"25MBA143":{"n":"Rajiv Ajay Shrivastava","b":"25MBA","s":["16","20","22","24","28","36"]},"25MBA201":{"n":"Padia Aayushi Jaiminbhai","b":"25MBA","s":["16","22","25","27","33"]},"25MBA212":{"n":"Patel Dev Rupesh","b":"25MBA","s":["13","16","19","22","26","32"]},"25MBA219":{"n":"Harsharan Singh Hura","b":"25MBA","s":["16","20","22","24","28","29"]},"25MBA222":{"n":"Jayant Kumar Rai","b":"25MBA","s":["14","16","20","24","26","33"]},"25MBA223":{"n":"Jiten Bellani","b":"25MBA","s":["16","20","22","24","28","35"]},"25MBA224":{"n":"Kashish Modi","b":"25MBA","s":["14","16","20","24","28"]},"25MBA229":{"n":"Rawat Navya Narendra Shweta","b":"25MBA","s":["14","16","20","22","24","28"]},"25MBA238":{"n":"Prashin Desai","b":"25MBA","s":["14","16","20","24","28","36"]},"25MBA245":{"n":"Shiroya Dhyey Rakeshbhai","b":"25MBA","s":["13","16","19","21","25","32"]},"25MBA249":{"n":"Thakkar Nakul Shankarlal","b":"25MBA","s":["14","16","20","22","25","26"]},"25MBA302":{"n":"Aditya Gautam","b":"25MBA","s":["10","12","16","20","22","25"]},"25MBA303":{"n":"Aditya Sharma","b":"25MBA","s":["14","16","20","22","24","28"]},"25MBA312":{"n":"Dhritishman Mahanta","b":"25MBA","s":["13","16","19","25","26","32"]},"25MBA313":{"n":"Banga Dhruv Punit","b":"25MBA","s":["13","16","22","25","26","32"]},"25MBA314":{"n":"Dixa Bharat Hirani","b":"25MBA","s":["16","19","24","28","33","35"]},"25MBA324":{"n":"Ms Kriti Agarwal","b":"25MBA","s":["16","19","24","28","33","35"]},"25MBA328":{"n":"Meghavi Kamalendra Singh Solanki","b":"25MBA","s":["9","11","16","20","23","26"]},"25MBA333":{"n":"Patel Chahil Bhaveshkumar","b":"25MBA","s":["9","16","20","21","23","27"]},"25MBA336":{"n":"Priyansh Sharma","b":"25MBA","s":["16","19","25","27","33","36"]},"25MBA414":{"n":"Dhamecha Meet Dharmeshbhai","b":"25MBA","s":["13","16","19","24","28","32"]},"25MBA420":{"n":"Iman Maity","b":"25MBA","s":["16","20","22","24","28","33"]},"25MBA422":{"n":"Biharani Jatin Nilesh","b":"25MBA","s":["13","16","19","22","25","32"]},"25MBA427":{"n":"Medhavi Bhat","b":"25MBA","s":["16","19","21","25","27","33"]},"25MBA430":{"n":"Gor Murti Jitesh","b":"25MBA","s":["14","16","20","22","24","28"]},"25MBA445":{"n":"Solanki Karan Hasmukhbhai","b":"25MBA","s":["16","19","22","24","28","33"]},"25MBA511":{"n":"Chauhan Yahya Amin","b":"25MBA","s":["13","16","20","25","26","32"]},"25MBA512":{"n":"Desai Laksh Nagdineshbhai","b":"25MBA","s":["13","16","21","23","26","32"]},"25MBA517":{"n":"Vastarpara Harsh Hareshbhai","b":"25MBA","s":["14","16","20","21","25","26"]},"25MBA519":{"n":"Himanshu Khandelwal","b":"25MBA","s":["16","20","22","24","28","32"]},"25MBA541":{"n":"Singh Riya Shrinivas Aarti","b":"25MBA","s":["5","9","11","16","26"]},"25MBA545":{"n":"Shah Rajvi Ashwinbhai","b":"25MBA","s":["14","16","20","22","24","28"]},"25MBA552":{"n":"Varun Goyal","b":"25MBA","s":["16","20","21","25","27"]},"25MBA555":{"n":"Vishwajeet Singh","b":"25MBA","s":["13","16","22","24","28","32"]},"25MBA601":{"n":"Abhijeetsingh Gour","b":"25MBA","s":["16","19","22","25","27","33"]},"25MBA603":{"n":"Adarsh Aniket Panda","b":"25MBA","s":["14","16","20","22","25","26"]},"25MBA606":{"n":"Bhavsar Divyank Ganeshbhai","b":"25MBA","s":["13","16","19","25","26","32"]},"25MBA613":{"n":"Chorya Jaiminkumar Arjunsinh","b":"25MBA","s":["14","16","20","22","25","29"]},"25MBA621":{"n":"Vaghasiya Jeel Dharmeshbhai","b":"25MBA","s":["6","11","16","25","26","36"]},"25MBA639":{"n":"Rishabh Tiwari","b":"25MBA","s":["13","16","21","23","26","32"]},"25MBA646":{"n":"Sweta Bhattacharjee","b":"25MBA","s":["13","16","19","26","32"]},"22BCM052":{"n":"Kanabar Ritu Ajay","b":"22BCM","s":["17","20","22","24","28","35"]},"24MBA613":{"n":"Bharwad Dev Navinbhai","b":"24MBA","s":["17","22","24","28","29"]},"25MBA120":{"n":"Harshvardhan Choube","b":"25MBA","s":["13","17","20","24","28","32"]},"25MBA139":{"n":"Prajapati Darshanaben Rohitkumar","b":"25MBA","s":["14","17","20","21","25","26"]},"25MBA145":{"n":"Shiv U Prabhu","b":"25MBA","s":["12","17","24","28","35","36"]},"25MBA203":{"n":"Vyas Akshat Pratikkumar","b":"25MBA","s":["17","20","25","29","35"]},"25MBA216":{"n":"Gaurav Bisht","b":"25MBA","s":["13","17","19","25","26","32"]},"25MBA218":{"n":"Hadiya Piyushbhai Vallabhbhai","b":"25MBA","s":["13","17","21","25","26","32"]},"25MBA232":{"n":"Parmar Karan Manish","b":"25MBA","s":["14","17","20","25","26"]},"25MBA243":{"n":"Sawant Sairaj Santosh","b":"25MBA","s":["17","20","25","27","29","35"]},"25MBA255":{"n":"Shah Virtee Nikhilbhai","b":"25MBA","s":["5","8","11","17","18","26"]},"25MBA301":{"n":"Shah Aayushi","b":"25MBA","s":["5","9","17","20","23","36"]},"25MBA304":{"n":"Arpit Tiwary","b":"25MBA","s":["17","20","24","28","29","32"]},"25MBA307":{"n":"Chaudhari Vyomkumar Ishvarbhai","b":"25MBA","s":["13","17","22","24","26","32"]},"25MBA308":{"n":"Desai Ravyesh Bhadreshbhai","b":"25MBA","s":["14","17","20","22","24","28"]},"25MBA318":{"n":"Kambad Harsh Ravibhai","b":"25MBA","s":["17","20","25","27","29","35"]},"25MBA334":{"n":"Patel Harshil Yogeshbhai","b":"25MBA","s":["13","17","18","22","26","32"]},"25MBA339":{"n":"Raunak Chatterjee","b":"25MBA","s":["13","17","19","25","26","32"]},"25MBA345":{"n":"Sehar Ablash","b":"25MBA","s":["5","9","17","20","23","36"]},"25MBA355":{"n":"Raole Vishrut Vinay","b":"25MBA","s":["14","17","20","28","29"]},"25MBA401":{"n":"Anuja Soni","b":"25MBA","s":["17","20","22","24","28","29"]},"25MBA402":{"n":"Aryan Moudgil","b":"25MBA","s":["17","20","22","24","28","29"]},"25MBA416":{"n":"Dhruv Das Singh Shekhawat","b":"25MBA","s":["17","20","24","28","29","36"]},"25MBA423":{"n":"Kamal Dua","b":"25MBA","s":["13","17","19","23","26","32"]},"25MBA439":{"n":"Riva Shah","b":"25MBA","s":["17","20","22","25","27","29"]},"25MBA503":{"n":"Sharma Aditya Rajendrakumar","b":"25MBA","s":["17","20","22","28","29","33"]},"25MBA538":{"n":"Rahul Singh Rao","b":"25MBA","s":["13","17","20","24","28","32"]},"25MBA604":{"n":"Arpan Sarkar","b":"25MBA","s":["17","20","22","25","35"]},"25MBA611":{"n":"Chaudhary Kinal Rohitbhai","b":"25MBA","s":["14","17","20","24","28"]},"25MBA650":{"n":"Maniar Vyom Tejas","b":"25MBA","s":["14","17","20","24","28"]},"25MBA202":{"n":"Akashdeep Singh Manral","b":"25MBA","s":["13","19","25","26","29","32"]},"25MBA207":{"n":"Ayush Shukla","b":"25MBA","s":["13","19","21","23","26","32"]},"25MBA248":{"n":"Srishti Bajaj","b":"25MBA","s":["13","19","21","25","26","32"]},"25MBA253":{"n":"Vaibhavi Singh","b":"25MBA","s":["13","20","24","28","32"]},"25MBA319":{"n":"Kartikey Gupta","b":"25MBA","s":["13","20","25","32"]},"25MBA426":{"n":"Makwana Rutwik Jagdish","b":"25MBA","s":["13","19","22","25","32"]},"25MBA435":{"n":"Patel Aryan Satish","b":"25MBA","s":["13","19","22","24","28","32"]},"25MBA504":{"n":"Dhar Anam Balkrishen Renu","b":"25MBA","s":["20","24","28","32","35"]},"25MBA514":{"n":"Gajipara Khushi Ashokbhai","b":"25MBA","s":["5","7","12","13","32"]},"25MBA649":{"n":"Vivek Nayak","b":"25MBA","s":["20","24","28","29","32","35"]},"25MBA115":{"n":"Deeprajsinh Ajitbhai Mori","b":"25MBA","s":["5","7","11","33"]},"25MBA228":{"n":"Nandan Pankajbhai Bhatia","b":"25MBA","s":["6","8","12","33","35"]},"25MBA348":{"n":"Sharma Anirudh Krishna Gopal","b":"25MBA","s":["6","10","12","33","35"]},"25MBA102":{"n":"Krishnani Abhay Prakash","b":"25MBA","s":["5","8","18","21","23","27"]},"25MBA332":{"n":"Odedara Veja Karshanbhai","b":"25MBA","s":["5","8","12","20","23","28"]},"25MBA432":{"n":"Nishant Rai","b":"25MBA","s":["5","18","21","23","26","36"]},"25MBA438":{"n":"Purswani Saniya Sunilkumar","b":"25MBA","s":["5","7","11","18","21","26"]},"25MBA453":{"n":"Virendra Singh Rajput","b":"25MBA","s":["5","9","11","21","23","26"]},"25MBA632":{"n":"Muskaan Kushwaha","b":"25MBA","s":["5","7","11","18"]},"25MBA247":{"n":"Somani Yash Jayeshbhai","b":"25MBA","s":["6","8","12","20","24","28"]},"25MBA252":{"n":"Turakhiya Darshit Vijaybhai","b":"25MBA","s":["6","8","11","21","25","26"]},"25MBA352":{"n":"Varun Joshi","b":"25MBA","s":["6","10","20","21","24","28"]},"22BCM063":{"n":"Vaibhav Raj Garg","b":"22BCM","s":["20","22","25","35","36"]},"24IBM138":{"n":"Manushi Patel","b":"24IBM","s":["21","29","36"]},"25IBM101":{"n":"Aaditya Kamboj","b":"25IBM","s":["21","29","36"]},"25IBM112":{"n":"Akshat B Sengar","b":"25IBM","s":["21","29","36"]},"25IBM114":{"n":"Anant Khushalani","b":"25IBM","s":["29","36"]},"25IBM117":{"n":"Aryaman Singh Rajpoot","b":"25IBM","s":["21","29","36"]},"25IBM121":{"n":"ASHWIN GODARA","b":"25IBM","s":["21","29","36"]},"25IBM133":{"n":"Hardik Neema","b":"25IBM","s":["36"]},"25IBM134":{"n":"Harshit Mishra","b":"25IBM","s":["21","29","36"]},"25IBM142":{"n":"Mahek Purwar","b":"25IBM","s":["14","21","36"]},"25IBM145":{"n":"Manya gupta","b":"25IBM","s":["29","36"]},"25IBM147":{"n":"Mithravindha T V","b":"25IBM","s":["14","21","36"]},"25IBM149":{"n":"Nishtha Upadhyay","b":"25IBM","s":["21","29","36"]},"25IBM159":{"n":"Shilpee Samal","b":"25IBM","s":["36"]},"25IBM161":{"n":"Shuchi Amin","b":"25IBM","s":["36"]},"25IBM162":{"n":"Soumya Sharma","b":"25IBM","s":["29","36"]},"25IBM163":{"n":"Sparsh Bandyopadhyay","b":"25IBM","s":["21","36"]},"25IBM166":{"n":"Tanya Sharma","b":"25IBM","s":["29","36"]},"25IBM168":{"n":"Teesha Somani","b":"25IBM","s":["21","29","36"]},"25IBM170":{"n":"Vanshika Agarwal","b":"25IBM","s":["21","29","36"]},"25IBM174":{"n":"Vishwa Mehta","b":"25IBM","s":["21","29","36"]},"25IBM176":{"n":"Vyshnav K Manoj","b":"25IBM","s":["14","29","36"]},"25IBM178":{"n":"Yashvi Kotecha","b":"25IBM","s":["36"]},"25IBM179":{"n":"Yashvi Agrawal","b":"25IBM","s":["36"]},"25IBM180":{"n":"Yuvraj khetan","b":"25IBM","s":["21","29","36"]},"25IBM102":{"n":"Aanya Rastogi","b":"25IBM","s":["29"]},"25IBM103":{"n":"Aastha Gandhi","b":"25IBM","s":["21","29"]},"25IBM115":{"n":"Ananya Vinod Kumar Panicker","b":"25IBM","s":["21","29"]},"25IBM120":{"n":"Ashish Lamor","b":"25IBM","s":["21","29"]},"25IBM128":{"n":"Devam Shah","b":"25IBM","s":["14","29"]},"25IBM129":{"n":"Divya Gautam","b":"25IBM","s":["21","29"]},"25IBM137":{"n":"Jaspreet","b":"25IBM","s":["14","21","29"]},"25IBM138":{"n":"Kashish Khatri","b":"25IBM","s":["21","29"]},"25IBM160":{"n":"SHIVANGI PARASHAR","b":"25IBM","s":["21","29"]},"25IBM104":{"n":"Aayushi Thakkar","b":"25IBM","s":["14","21"]},"25IBM181":{"n":"Yuvraj Neema","b":"25IBM","s":["21"]},"25IBM123":{"n":"Avish Shah","b":"25IBM","s":["14"]},"25IBM127":{"n":"Deep Chopra","b":"25IBM","s":["14"]},"25IBM140":{"n":"Krish Mehta","b":"25IBM","s":["14"]}}};
+
+const SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>';
+const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z"/></svg>';
+const root = document.documentElement;
+function setTheme(t){
+  root.setAttribute("data-theme", t);
+  try{ localStorage.setItem("imnu-theme", t); }catch(e){}
+  const btn = document.getElementById("themeBtn");
+  btn.innerHTML = t==="dark" ? SUN : MOON;
+  btn.setAttribute("aria-label", t==="dark" ? "Switch to light theme" : "Switch to dark theme");
+}
+let saved=null; try{ saved=localStorage.getItem("imnu-theme"); }catch(e){}
+setTheme(saved || (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light"));
+document.getElementById("themeBtn").addEventListener("click",
+  ()=> setTheme(root.getAttribute("data-theme")==="dark" ? "light":"dark"));
+
+const AREA_SLUG = {"Finance":"finance","Marketing":"marketing","DnA":"dna","OB":"ob","OM":"om","E & S":"es"};
+const slug = a => "a-" + (AREA_SLUG[a] || "gen");
+const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+
+$("inst").textContent = DATA.meta.institute + " · " + DATA.meta.term;
+const wk = new Date(DATA.meta.week_of + "T00:00:00");
+const fmt = d => d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+const fmtDay = ds => new Date(ds+"T00:00:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+const wkEnd = new Date(wk); wkEnd.setDate(wk.getDate()+6);
+$("weekof").textContent = fmt(wk) + " – " + fmt(wkEnd) + ", " + wk.getFullYear();
+$("ft-term").textContent = DATA.meta.institute + " · " + DATA.meta.term;
+
+// today + events (global, not student-specific)
+const dayDate = {};
+DATA.days.forEach((d,i)=>{ const dt=new Date(wk); dt.setDate(wk.getDate()+i);
+  dayDate[d]=`${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`; });
+const now=new Date(); const todayStr=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+const todayDay = Object.keys(dayDate).find(d=>dayDate[d]===todayStr) || null;
+const eventsByDay = {}; (DATA.events||[]).forEach(e=>{ (eventsByDay[e.day]=eventsByDay[e.day]||[]).push(e); });
+
+function lookup(){
+  const roll = $("roll").value.trim().toUpperCase();
+  $("roll").value = roll;
+  const err = $("err"), res = $("result");
+  res.classList.remove("show"); err.classList.remove("show");
+  if(!roll){ err.textContent="Type your roll number to continue."; err.classList.add("show"); return; }
+  const st = DATA.students[roll];
+  if(!st){ err.textContent="No student found for "+roll+". Check the roll number and try again."; err.classList.add("show"); return; }
+  render(roll, st);
+}
+
+function legendAndEvents(){
+  let h = `<div class="legend">
+      <span class="li"><span class="sw cls"></span>My Class</span>
+      <span class="li"><span class="sw today"></span>Today</span>
+      <span class="li"><span class="sw hol"></span>Holiday</span>
+      <span class="li"><span class="sw exam"></span>Exam</span>
+    </div>`;
+  const evs = DATA.events||[];
+  let strip = evs.filter(e=>e.type==="holiday")
+      .map(e=>`<span class="evp hol"><span class="d">${fmtDay(e.date)}</span> ${esc(e.name)}</span>`).join("");
+  const exams = evs.filter(e=>e.type==="exam");
+  strip += exams.length
+      ? exams.map(e=>`<span class="evp exam"><span class="d">${fmtDay(e.date)}</span> ${esc(e.name)}</span>`).join("")
+      : `<span class="evp none">No exams this week</span>`;
+  return h + `<div class="events">${strip}</div>`;
+}
+
+function render(roll, st){
+  const electives = st.s.map(id => Object.assign({id}, DATA.sections[id]));
+  const meetings = [];
+  electives.forEach(e => (e.meetings||[]).forEach(m => meetings.push(Object.assign({sec:e}, m))));
+  const eventDays = new Set(Object.keys(eventsByDay));
+  const usedDays = DATA.days.filter(d => meetings.some(m=>m.day===d) || eventDays.has(d));
+  const usedSess = DATA.sessions.filter(s => meetings.some(m=>m.session===s.name));
+  const cellMap = {};
+  meetings.forEach(m => { const k=m.day+"|"+m.session; (cellMap[k]=cellMap[k]||[]).push(m); });
+
+  let html = `<div class="who">
+      <span class="name">${esc(st.n)}</span>
+      <span class="chip">${esc(roll)}</span>
+      <span class="meta">${electives.length} electives · ${esc(st.b)} batch</span>
+    </div>`;
+
+  html += `<div class="section-label">This week</div>`;
+  html += legendAndEvents();
+
+  if(usedDays.length===0){
+    html += `<p style="color:var(--muted)">No classes are scheduled for you this week.</p>`;
+  } else {
+    const firstSess = usedSess.length ? usedSess[0].name : null;
+    // grid (desktop)
+    html += `<div class="grid-wrap"><div class="grid" style="grid-template-columns:auto repeat(${usedDays.length},1fr)">`;
+    html += `<div></div>` + usedDays.map(d=>{
+        const hol = (eventsByDay[d]||[]).some(e=>e.type==="holiday");
+        const cls = (d===todayDay?"today ":"") + (hol?"hol":"");
+        return `<div class="gh ${cls}">${d.slice(0,3)}${d===todayDay?'<span class="tg">Today</span>':''}</div>`;
+      }).join("");
+    usedSess.forEach(s=>{
+      html += `<div class="gt">${esc(s.start)}<br>${esc(s.end||"")}</div>`;
+      usedDays.forEach(d=>{
+        const list = cellMap[d+"|"+s.name]||[];
+        const evHere = (s.name===firstSess) ? (eventsByDay[d]||[]) : [];
+        const todayc = d===todayDay ? " todaycol":"";
+        const clash = list.length>1 ? " clash":"";
+        if(!list.length && !evHere.length){ html += `<div class="cell empty${todayc}"></div>`; return; }
+        html += `<div class="cell${clash}${todayc}">`
+              + evHere.map(evBlk).join("")
+              + list.map(m=>blk(m.sec)).join("") + `</div>`;
+      });
+    });
+    html += `</div></div>`;
+
+    // agenda (mobile)
+    html += `<div class="agenda">`;
+    usedDays.forEach(d=>{
+      const isToday = d===todayDay;
+      html += `<div class="day-grp${isToday?' today':''}"><h3>${d}${isToday?'<span class="tg">Today</span>':''}</h3>`;
+      (eventsByDay[d]||[]).forEach(ev=>{
+        html += `<div class="arow"><div class="t">All day</div>
+                 <span class="blk ev-${ev.type==='holiday'?'holiday':'exam'}">
+                   <span class="ab">${ev.type==='holiday'?'Holiday':'Exam'}</span>
+                   <span class="nm">${esc(ev.name)}</span></span></div>`;
+      });
+      meetings.filter(m=>m.day===d)
+        .sort((a,b)=>usedSess.findIndex(s=>s.name===a.session)-usedSess.findIndex(s=>s.name===b.session))
+        .forEach(m=>{
+          html += `<div class="arow"><div class="t">${esc(m.start)}<br>${esc(m.end||"")}</div>
+                   <a class="blk ${slug(m.sec.area)}" href="#e-${m.sec.id}">
+                     <span class="ab">${esc(m.sec.abbr)}(${esc(m.sec.division||"-")})</span>
+                     <span class="nm">${esc(m.sec.name)}</span>
+                     <span class="rm">${esc(m.sec.room||"TBA")} · ${esc(m.sec.faculty||"")}</span>
+                   </a></div>`;
+        });
+      html += `</div>`;
+    });
+    html += `</div>`;
+  }
+
+  // electives directory
+  html += `<div class="section-label">Your electives, faculty &amp; rooms</div><div class="cards">`;
+  electives.slice().sort((a,b)=>a.abbr.localeCompare(b.abbr)).forEach(e=>{
+    const when = (e.meetings||[]).map(m=>`${m.day.slice(0,3)} ${m.start}`).join(", ");
+    html += `<div class="card ${slug(e.area)}" id="e-${e.id}">
+      <div class="top"><div class="nm">${esc(e.name)}</div><span class="badge">${esc(e.area)}</span></div>
+      <div class="row"><span class="k">Section</span><span class="pill">${esc(e.abbr)}(${esc(e.division||"-")})</span></div>
+      <div class="row"><span class="k">Faculty</span><span>${esc(e.faculty||"—")}</span></div>
+      ${e.email?`<div class="row"><span class="k">Email</span><a href="mailto:${esc(e.email)}">${esc(e.email)}</a></div>`:""}
+      <div class="row"><span class="k">Room</span><span class="pill">${esc(e.room||"TBA")}</span></div>
+      ${when?`<div class="row"><span class="k">Meets</span><span>${esc(when)}</span></div>`:`<div class="none">Not scheduled this week</div>`}
+    </div>`;
+  });
+  html += `</div>`;
+
+  $("result").innerHTML = html;
+  $("result").classList.add("show");
+}
+
+function blk(s){
+  return `<a class="blk ${slug(s.area)}" href="#e-${s.id}" title="${esc(s.name)} — ${esc(s.faculty||"")}">
+      <span class="ab">${esc(s.abbr)}</span>
+      <span class="rm">${esc(s.room||"TBA")} <small>${esc(s.division?"Div "+s.division:"")}</small></span>
+    </a>`;
+}
+function evBlk(ev){
+  return `<span class="blk ev-${ev.type==='holiday'?'holiday':'exam'}">
+      <span class="ab">${ev.type==='holiday'?'Holiday':'Exam'}</span>
+      <span class="rm">${esc(ev.name)}</span></span>`;
+}
+
+$("btn").addEventListener("click", lookup);
+$("roll").addEventListener("keydown", e=>{ if(e.key==="Enter") lookup(); });
+$("roll").focus();
+</script>
+</body>
+</html>
