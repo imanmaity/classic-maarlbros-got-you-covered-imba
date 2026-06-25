@@ -1,0 +1,56 @@
+name: Daily reminders
+
+# Runs the push-notification sender on a tight cadence. Each run is cheap:
+# it fetches the live schedule + the subscriber list, and only sends to people
+# whose chosen time falls in this 10-minute slot. Most runs send nothing.
+#
+# This is a SEPARATE workflow from "Weekly schedule update" on purpose — it must
+# never rebuild or redeploy the site, and keeping it separate keeps the Actions
+# tab readable (build failures stay easy to spot).
+#
+# REQUIRED REPO SECRETS (Settings ▸ Secrets and variables ▸ Actions):
+#   VAPID_PRIVATE      raw base64url VAPID private key (matches the app's public key)
+#   NOTIFY_EXPORT_KEY  the same secret string you set as EXPORT_KEY in the collector .gs
+#   VAPID_SUB          a contact, e.g. "mailto:youremail@gmail.com"
+# Optional (have sensible defaults baked below, override as secrets/vars if needed):
+#   NOTIFY_ENDPOINT    collector /exec URL   (defaults to the one in build_app.py)
+#   SITE_DATA_URL      published schedule_data.json URL
+#
+# cron is UTC and GitHub-throttled, so reminders are best-effort (±10 min).
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"     # every 10 min, all day (covers any picked time)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Compute + log without actually sending"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reminders
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pywebpush
+      - name: Send due reminders
+        env:
+          VAPID_PRIVATE:     ${{ secrets.VAPID_PRIVATE }}
+          VAPID_SUB:         ${{ secrets.VAPID_SUB }}
+          NOTIFY_EXPORT_KEY: ${{ secrets.NOTIFY_EXPORT_KEY }}
+          NOTIFY_ENDPOINT:   "https://script.google.com/macros/s/AKfycbyxU2THM7e1YHSM88fHN9GcNCf8slMHHaadKdHLE_mLpJFUyTdtauzRitRyv4kB4kA2sg/exec"
+          SITE_DATA_URL:     "https://imanmaity.github.io/classic-maarlbros-got-you-covered/schedule_data.json"
+          WINDOW_MIN:        "10"
+          DRY_RUN:           ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '' }}
+        run: python scripts/send_digests.py

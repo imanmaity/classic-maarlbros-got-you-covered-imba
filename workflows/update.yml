@@ -1,0 +1,65 @@
+name: Weekly schedule update
+
+on:
+  schedule:
+    - cron: "0,30 0-15 * * *"   # every 30 min, 05:30-21:00 IST (UTC 00:00-15:30)
+  workflow_dispatch:           # lets you run it manually from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: Self-test (parser sanity check)
+        run: python scripts/selftest.py
+
+      - name: Fetch latest schedule from email
+        env:
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          SENDER: ${{ secrets.SENDER }}
+          MAIL_SUBJECT: ${{ secrets.MAIL_SUBJECT }}
+        run: python scripts/fetch_email.py rosters/schedule_latest.xlsx
+
+      - name: Build dataset
+        run: python scripts/build_dataset.py --input rosters --output data
+      - name: Export JSON
+        run: python scripts/export_json.py data/university.db data/schedule_data.json
+      - name: Build app
+        run: python scripts/build_app.py data/schedule_data.json site/index.html
+
+      - name: Refuse to publish if the import had errors
+        run: |
+          if grep -q "\*\*ERROR\*\*" data/validation_report.md; then
+            echo "::error::Import produced ERRORs — not publishing this week."
+            cat data/validation_report.md
+            exit 1
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
